@@ -1,0 +1,10 @@
+langchain-google-genai
+langgraph
+langchain
+langchain-community
+streamlit
+python-dotenv
+requests
+chromadb
+shodan
+pandas

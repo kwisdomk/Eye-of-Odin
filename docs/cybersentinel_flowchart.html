@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberSentinel AI — System Flowchart</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #030712;
+    --panel:     #0a1628;
+    --panel2:    #0d1f3c;
+    --border:    #1a3a6e;
+    --gemini:    #a855f7;
+    --gemini2:   #7c3aed;
+    --geminiGlow:#a855f720;
+    --ibm:       #3b82f6;
+    --ibm2:      #1d4ed8;
+    --ibmGlow:   #3b82f620;
+    --mvp:       #10b981;
+    --mvp2:      #059669;
+    --mvpGlow:   #10b98120;
+    --prod:      #f59e0b;
+    --prod2:     #d97706;
+    --prodGlow:  #f59e0b20;
+    --danger:    #ef4444;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --line:      #1e40af;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(30,64,175,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,64,175,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 18px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--mvp);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  .header-badge .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--mvp);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:.4; transform:scale(1.4); }
+  }
+  .header h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 700;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #60a5fa, #a855f7, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 44px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* ── Layer labels ── */
+  .layer-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 32px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .layer-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Flow container ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── Row of nodes ── */
+  .row {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+  }
+
+  /* ── Arrow connectors between rows ── */
+  .arrow-down {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 44px;
+    position: relative;
+  }
+  .arrow-down::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border), var(--ibm));
+    transform: translateX(-50%);
+  }
+  .arrow-down::after {
+    content: '▼';
+    color: var(--ibm);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+    background: var(--bg);
+    padding: 0 4px;
+  }
+
+  /* branching arrows */
+  .arrow-branch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 44px;
+    gap: 0;
+  }
+
+  /* ── Node cards ── */
+  .node {
+    position: relative;
+    border-radius: 12px;
+    padding: 16px 20px;
+    min-width: 160px;
+    max-width: 220px;
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    transition: transform .2s, box-shadow .2s;
+    cursor: default;
+    margin: 0 6px;
+  }
+  .node:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  }
+  .node-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .node-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .node-sub {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Node variants */
+  .node-gemini {
+    border-color: var(--gemini2);
+    background: linear-gradient(135deg, var(--panel), #1a0a2e);
+    box-shadow: 0 0 24px var(--geminiGlow), inset 0 0 40px var(--geminiGlow);
+  }
+  .node-gemini .node-title { color: var(--gemini); }
+
+  .node-ibm {
+    border-color: var(--ibm2);
+    background: linear-gradient(135deg, var(--panel), #0a1a3e);
+    box-shadow: 0 0 20px var(--ibmGlow), inset 0 0 40px var(--ibmGlow);
+  }
+  .node-ibm .node-title { color: var(--ibm); }
+
+  .node-mvp {
+    border-color: var(--mvp2);
+    background: linear-gradient(135deg, var(--panel), #0a2818);
+    box-shadow: 0 0 20px var(--mvpGlow);
+  }
+  .node-mvp .node-title { color: var(--mvp); }
+
+  .node-prod {
+    border-color: var(--prod2);
+    background: linear-gradient(135deg, var(--panel), #2a1800);
+    box-shadow: 0 0 20px var(--prodGlow);
+  }
+  .node-prod .node-title { color: var(--prod); }
+
+  .node-input {
+    border-color: var(--danger);
+    background: linear-gradient(135deg, var(--panel), #2a0808);
+    box-shadow: 0 0 20px rgba(239,68,68,.15);
+  }
+  .node-input .node-title { color: var(--danger); }
+
+  .node-neutral {
+    border-color: #334155;
+    background: var(--panel2);
+  }
+  .node-neutral .node-title { color: #94a3b8; }
+
+  /* badge tags on nodes */
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+  .tag-mvp  { background: var(--mvpGlow);  color: var(--mvp);  border: 1px solid var(--mvp2); }
+  .tag-prod { background: var(--prodGlow); color: var(--prod); border: 1px solid var(--prod2); }
+  .tag-both { background: rgba(99,102,241,.15); color: #818cf8; border: 1px solid #4338ca; }
+
+  /* ── Horizontal connector line between sibling nodes ── */
+  .hline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+  .hline::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--border);
+    z-index: 0;
+  }
+
+  /* ── Section blocks (MVP vs Prod side-by-side) ── */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 8px 0;
+  }
+
+  .split-panel {
+    border-radius: 14px;
+    border: 1px solid;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .split-panel::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 0; right: 0;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 5px 12px;
+    border-bottom-left-radius: 8px;
+    font-weight: 700;
+  }
+  .split-mvp {
+    border-color: var(--mvp2);
+    background: linear-gradient(135deg, #0a1628, #0a2818);
+  }
+  .split-mvp::before { background: var(--mvp2); color: #fff; }
+  .split-prod {
+    border-color: var(--prod2);
+    background: linear-gradient(135deg, #0a1628, #2a1800);
+  }
+  .split-prod::before { background: var(--prod2); color: #fff; }
+
+  .split-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 14px;
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+  .split-mvp .split-title { color: var(--mvp); }
+  .split-prod .split-title { color: var(--prod); }
+
+  .split-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .split-item .si-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .split-item .si-text strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 1px;
+  }
+  .split-item .si-text span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  /* ── Wide banner node ── */
+  .banner-node {
+    border-radius: 14px;
+    padding: 18px 28px;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 6px;
+    flex: 1;
+  }
+  .banner-node .bn-icon { font-size: 28px; }
+  .banner-node .bn-body .bn-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+  .banner-node .bn-body .bn-sub {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── Gemini highlight banner ── */
+  .gemini-banner {
+    background: linear-gradient(135deg, #0d0520, #1a0a3e, #0d0520);
+    border-color: var(--gemini2);
+    box-shadow: 0 0 40px var(--geminiGlow);
+  }
+  .gemini-banner .bn-title { color: var(--gemini); }
+
+  /* ── Step connectors inside split panels ── */
+  .step-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .step-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 8px 0;
+    position: relative;
+  }
+  .step-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 32px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .step-mvp .step-num  { background: var(--mvp2);  color: #fff; }
+  .step-prod .step-num { background: var(--prod2); color: #fff; }
+  .step-text strong { font-size: 13px; font-weight: 700; display: block; margin-bottom: 2px; }
+  .step-text span   { font-size: 11px; color: var(--muted); }
+
+  /* ── Comparison table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .compare-table th {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+  .compare-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #0f1f3a;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .compare-table tr:hover td { background: rgba(255,255,255,.02); }
+  .compare-table td:first-child { color: #94a3b8; font-weight: 600; }
+  .c-mvp  { color: var(--mvp) !important; font-weight: 700 !important; }
+  .c-prod { color: var(--prod) !important; font-weight: 700 !important; }
+
+  /* ── Card wrapper ── */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin: 8px 0;
+  }
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Scrolling scan line effect */
+  @keyframes scan {
+    0%   { top: -10%; }
+    100% { top: 110%; }
+  }
+  .scan-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .scan-line {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(59,130,246,.15), transparent);
+    animation: scan 8s linear infinite;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .split { grid-template-columns: 1fr; }
+    .row   { flex-wrap: wrap; }
+    .node  { min-width: 140px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scan-overlay"><div class="scan-line"></div></div>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <div class="dot"></div>
+      SYSTEM ARCHITECTURE
+    </div>
+    <h1>CYBERSENTINEL AI</h1>
+    <p>Project Breakdown · MVP → Production Flowchart · Powered by Gemini + IBM watsonx</p>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gemini);"></div> Google Gemini</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ibm);"></div> IBM watsonx</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--mvp); border-radius:50%;"></div> MVP (Hackathon)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--prod); border-radius:50%;"></div> Production</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#818cf8; border-radius:50%;"></div> Both</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--danger); border-radius:50%;"></div> Input / Threat</div>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 1 — INPUT               -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">① INPUT LAYER — THREATS ENTER HERE</div>
+
+  <div class="row">
+    <div class="node node-input">
+      <span class="node-icon">📁</span>
+      <div class="node-title">Log Files</div>
+      <div class="node-sub">System logs, auth logs, app logs</div>
+      <span class="tag tag-both">MVP + PROD</span>
+    </div>
+    <div class="node node-input">
+      <span class="node-icon">🌐</span>
+      <div class="node-title">Network Traffic</div>
+      <div class="node-sub">Packet captures, flow data</div>
+      <span class="tag tag-prod">PROD ONLY</span>
+    </div>
+    <div class="node node-input">
+      <span class="node-icon">⚙️</span>
+      <div class="node-title">API Streams</div>
+      <div class="node-sub">REST calls, webhooks, events</div>
+      <span class="tag tag-prod">PROD ONLY</span>
+    </div>
+    <div class="node node-input">
+      <span class="node-icon">🖥️</span>
+      <div class="node-title">Simulated Logs</div>
+      <div class="node-sub">fake_logs.py attack sequences</div>
+      <span class="tag tag-mvp">MVP ONLY</span>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 2 — ORCHESTRATION       -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">② ORCHESTRATION LAYER</div>
+
+  <div class="split" style="margin-bottom:0;">
+    <div class="split-panel split-mvp" data-label="MVP">
+      <div class="split-title">🐍 LangGraph (Local)</div>
+      <div class="split-item">
+        <div class="si-icon">⚡</div>
+        <div class="si-text">
+          <strong>create_react_agent()</strong>
+          <span>Python-native ReAct loop. Zero cloud setup needed. Runs on your laptop.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">📦</div>
+        <div class="si-text">
+          <strong>In-memory state</strong>
+          <span>Agent state lives in Python memory. Resets on restart — fine for demo.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">🔧</div>
+        <div class="si-text">
+          <strong>Single agent</strong>
+          <span>One ReAct agent handles all tasks: triage, investigate, alert, report.</span>
+        </div>
+      </div>
+    </div>
+    <div class="split-panel split-prod" data-label="PRODUCTION">
+      <div class="split-title">🔵 IBM watsonx Orchestrate</div>
+      <div class="split-item">
+        <div class="si-icon">🏢</div>
+        <div class="si-text">
+          <strong>Enterprise workflow engine</strong>
+          <span>Routes tasks between specialised agents. Handles failure recovery.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">☁️</div>
+        <div class="si-text">
+          <strong>Persistent cloud state</strong>
+          <span>Agent state survives restarts. Audit trail for compliance.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">🤝</div>
+        <div class="si-text">
+          <strong>Multi-agent system</strong>
+          <span>Monitor, Triage, Investigation, Response, Report agents run in parallel.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 3 — GEMINI CORE         -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">③ GEMINI REASONING LAYER — THE BRAIN ✨</div>
+
+  <div class="row">
+    <div class="banner-node gemini-banner" style="border-radius:14px; padding:24px 32px;">
+      <div class="bn-icon">✨</div>
+      <div class="bn-body">
+        <div class="bn-title">Google Gemini 2.0 Flash — Core Intelligence Engine</div>
+        <div class="bn-sub">
+          Every intelligent decision passes through Gemini. Log interpretation · Threat reasoning · Tool selection · Severity classification · Alert writing · Incident report generation.<br>
+          <span style="color:var(--gemini); font-weight:700; font-size:12px; margin-top:6px; display:block;">This is not a chatbot. Gemini acts as the autonomous SOC analyst brain.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 4 — REACT LOOP          -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">④ REACT AGENT LOOP — REASON → ACT → OBSERVE</div>
+
+  <div class="row">
+    <div class="node node-gemini">
+      <span class="node-icon">🧠</span>
+      <div class="node-title">REASON</div>
+      <div class="node-sub">Gemini reads log entry. Decides if suspicious. Plans which tool to call.</div>
+      <span class="tag tag-both">STEP 1</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--border);font-size:20px;padding:0 4px;">→</div>
+    <div class="node node-gemini">
+      <span class="node-icon">⚡</span>
+      <div class="node-title">ACT</div>
+      <div class="node-sub">Calls a tool: check_local_db → VirusTotal → Shodan → send_alert</div>
+      <span class="tag tag-both">STEP 2</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--border);font-size:20px;padding:0 4px;">→</div>
+    <div class="node node-gemini">
+      <span class="node-icon">👁️</span>
+      <div class="node-title">OBSERVE</div>
+      <div class="node-sub">Reads tool result. Updates its reasoning. Loops back or concludes.</div>
+      <span class="tag tag-both">STEP 3</span>
+    </div>
+    <div style="display:flex;align-items:center;color:var(--border);font-size:20px;padding:0 4px;">→</div>
+    <div class="node node-gemini">
+      <span class="node-icon">📝</span>
+      <div class="node-title">CONCLUDE</div>
+      <div class="node-sub">Final answer: threat classification, alert message, or incident report.</div>
+      <span class="tag tag-both">STEP 4</span>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 5 — TOOLS               -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">⑤ TOOLS — WHAT THE AGENT CAN DO</div>
+
+  <div class="row">
+    <div class="node node-mvp">
+      <span class="node-icon">🗄️</span>
+      <div class="node-title">Local Threat DB</div>
+      <div class="node-sub">In-memory dict of known bad IPs. Zero API calls. Instant.</div>
+      <span class="tag tag-mvp">MVP</span>
+    </div>
+    <div class="node node-ibm">
+      <span class="node-icon">🦠</span>
+      <div class="node-title">VirusTotal API</div>
+      <div class="node-sub">IP reputation: malicious votes from 70+ security vendors.</div>
+      <span class="tag tag-both">MVP + PROD</span>
+    </div>
+    <div class="node node-ibm">
+      <span class="node-icon">📡</span>
+      <div class="node-title">Shodan API</div>
+      <div class="node-sub">Network intel: open ports, org, country, known services.</div>
+      <span class="tag tag-both">MVP + PROD</span>
+    </div>
+    <div class="node node-prod">
+      <span class="node-icon">🔒</span>
+      <div class="node-title">Firewall API</div>
+      <div class="node-sub">Auto-block malicious IPs at network perimeter.</div>
+      <span class="tag tag-prod">PROD ONLY</span>
+    </div>
+    <div class="node node-prod">
+      <span class="node-icon">🔗</span>
+      <div class="node-title">SIEM Integration</div>
+      <div class="node-sub">IBM QRadar / Splunk for enterprise log management.</div>
+      <span class="tag tag-prod">PROD ONLY</span>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 6 — MEMORY / STORAGE    -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">⑥ MEMORY & STORAGE LAYER</div>
+
+  <div class="split" style="margin-bottom:0;">
+    <div class="split-panel split-mvp" data-label="MVP">
+      <div class="split-title">💾 SQLite + ChromaDB (Local)</div>
+      <div class="split-item">
+        <div class="si-icon">🗃️</div>
+        <div class="si-text">
+          <strong>SQLite — cybersentinel.db</strong>
+          <span>3 tables: logs · alerts · incidents. Single file, zero setup, zero cost.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">🧬</div>
+        <div class="si-text">
+          <strong>ChromaDB — local vector store</strong>
+          <span>Semantic memory of past incidents. Gemini can recall similar threats.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">📄</div>
+        <div class="si-text">
+          <strong>File-based outputs</strong>
+          <span>logs/alerts.txt · logs/agent_output.txt · reports/*.txt</span>
+        </div>
+      </div>
+    </div>
+    <div class="split-panel split-prod" data-label="PRODUCTION">
+      <div class="split-title">🔵 IBM watsonx Vector Store</div>
+      <div class="split-item">
+        <div class="si-icon">☁️</div>
+        <div class="si-text">
+          <strong>Enterprise vector database</strong>
+          <span>Stores millions of incidents. Persistent across all agent instances.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">🔍</div>
+        <div class="si-text">
+          <strong>Semantic threat recall</strong>
+          <span>"We saw a similar attack 3 weeks ago from a different IP" — IBM memory.</span>
+        </div>
+      </div>
+      <div class="split-item">
+        <div class="si-icon">🏦</div>
+        <div class="si-text">
+          <strong>PostgreSQL / IBM Db2</strong>
+          <span>Production relational database. ACID compliance. Full audit logs.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   LAYER 7 — OUTPUTS             -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label">⑦ OUTPUT LAYER — WHAT THE SYSTEM PRODUCES</div>
+
+  <div class="row">
+    <div class="node node-mvp">
+      <span class="node-icon">📊</span>
+      <div class="node-title">Streamlit Dashboard</div>
+      <div class="node-sub">Live log feed, Gemini reasoning panel, alert stats.</div>
+      <span class="tag tag-mvp">MVP</span>
+    </div>
+    <div class="node node-gemini">
+      <span class="node-icon">🚨</span>
+      <div class="node-title">Security Alerts</div>
+      <div class="node-sub">Written by Gemini. Sent to file + Slack + DB.</div>
+      <span class="tag tag-both">MVP + PROD</span>
+    </div>
+    <div class="node node-gemini">
+      <span class="node-icon">📋</span>
+      <div class="node-title">Incident Reports</div>
+      <div class="node-sub">Full Gemini-written reports: timeline, impact, remediation.</div>
+      <span class="tag tag-both">MVP + PROD</span>
+    </div>
+    <div class="node node-prod">
+      <span class="node-icon">🛡️</span>
+      <div class="node-title">Auto-Containment</div>
+      <div class="node-sub">IP blocked at firewall. System quarantined. Team notified.</div>
+      <span class="tag tag-prod">PROD ONLY</span>
+    </div>
+    <div class="node node-prod">
+      <span class="node-icon">📱</span>
+      <div class="node-title">Mobile Alerts</div>
+      <div class="node-sub">Push notifications to security team's phones.</div>
+      <span class="tag tag-prod">PROD ONLY</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   COMPARISON TABLE              -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label" style="margin-top:44px;">⑧ MVP vs PRODUCTION — FULL COMPARISON</div>
+
+  <div class="card">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>COMPONENT</th>
+          <th style="color:var(--mvp);">MVP — HACKATHON</th>
+          <th style="color:var(--prod);">PRODUCTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🧠 LLM</td>
+          <td class="c-mvp">Gemini 2.0 Flash (free tier)</td>
+          <td class="c-prod">Gemini 2.0 Flash via IBM BYOM + fallback models</td>
+        </tr>
+        <tr>
+          <td>⚙️ Orchestration</td>
+          <td class="c-mvp">LangGraph local (Python only)</td>
+          <td class="c-prod">IBM watsonx Orchestrate (cloud, multi-agent)</td>
+        </tr>
+        <tr>
+          <td>🤖 Agents</td>
+          <td class="c-mvp">1 ReAct agent (all-in-one)</td>
+          <td class="c-prod">5 specialised agents running in parallel</td>
+        </tr>
+        <tr>
+          <td>💾 Database</td>
+          <td class="c-mvp">SQLite (single file)</td>
+          <td class="c-prod">IBM Db2 / PostgreSQL (cloud, replicated)</td>
+        </tr>
+        <tr>
+          <td>🧬 Vector Memory</td>
+          <td class="c-mvp">ChromaDB (local)</td>
+          <td class="c-prod">IBM watsonx Vector Store (persistent, scalable)</td>
+        </tr>
+        <tr>
+          <td>🔍 Threat Intel</td>
+          <td class="c-mvp">Local dict + VirusTotal + Shodan (free tiers)</td>
+          <td class="c-prod">Full VirusTotal, Shodan, AlienVault OTX, MISP</td>
+        </tr>
+        <tr>
+          <td>🔒 Response</td>
+          <td class="c-mvp">Slack alert + text file</td>
+          <td class="c-prod">Auto firewall block + SIEM + mobile push + email</td>
+        </tr>
+        <tr>
+          <td>📊 Dashboard</td>
+          <td class="c-mvp">Streamlit (localhost)</td>
+          <td class="c-prod">React app on IBM Cloud (multi-user, role-based)</td>
+        </tr>
+        <tr>
+          <td>📥 Input sources</td>
+          <td class="c-mvp">Simulated log file (fake_logs.py)</td>
+          <td class="c-prod">Real syslog, network tap, API streams, cloud logs</td>
+        </tr>
+        <tr>
+          <td>⏱️ Build time</td>
+          <td class="c-mvp">7 hours</td>
+          <td class="c-prod">3–6 months</td>
+        </tr>
+        <tr>
+          <td>💰 Cost</td>
+          <td class="c-mvp">$0 (free API tiers)</td>
+          <td class="c-prod">IBM Cloud + API subscriptions (~$500–2000/mo)</td>
+        </tr>
+        <tr>
+          <td>🌍 Scale</td>
+          <td class="c-mvp">1 machine, demo only</td>
+          <td class="c-prod">Enterprise — thousands of events/second</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ════════════════════════════════ -->
+  <!--   GEMINI USAGE MAP              -->
+  <!-- ════════════════════════════════ -->
+  <div class="layer-label" style="margin-top:44px;">⑨ WHERE GEMINI IS USED — COMPLETE MAP ✨</div>
+
+  <div class="row" style="flex-wrap:wrap; gap:12px; justify-content:flex-start;">
+    <div class="node node-gemini" style="max-width:280px; flex:none;">
+      <span class="node-icon">✨</span>
+      <div class="node-title">Log Interpretation</div>
+      <div class="node-sub">Reads raw log text. Understands context. No rules or keywords needed.</div>
+    </div>
+    <div class="node node-gemini" style="max-width:280px; flex:none;">
+      <span class="node-icon">✨</span>
+      <div class="node-title">Tool Decision Making</div>
+      <div class="node-sub">Decides which tool to call, and in what order, based on its own reasoning.</div>
+    </div>
+    <div class="node node-gemini" style="max-width:280px; flex:none;">
+      <span class="node-icon">✨</span>
+      <div class="node-title">Severity Classification</div>
+      <div class="node-sub">CRITICAL / HIGH / MEDIUM based on full context, not keyword matching.</div>
+    </div>
+    <div class="node node-gemini" style="max-width:280px; flex:none;">
+      <span class="node-icon">✨</span>
+      <div class="node-title">Threat Synthesis</div>
+      <div class="node-sub">Combines VirusTotal + Shodan results into one coherent threat picture.</div>
+    </div>
+    <div class="node node-gemini" style="max-width:280px; flex:none;">
+      <span class="node-icon">✨</span>
+      <div class="node-title">Alert Writing</div>
+      <div class="node-sub">Writes clear, human-readable alerts. No templates. Contextual every time.</div>
+    </div>
+    <div class="node node-gemini" style="max-width:280px; flex:none;">
+      <span class="node-icon">✨</span>
+      <div class="node-title">Incident Reports</div>
+      <div class="node-sub">Writes full professional reports: timeline, impact, recommendations.</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center; margin-top:56px; padding-top:24px; border-top:1px solid var(--border);">
+    <div style="font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--muted);">
+      CYBERSENTINEL AI · MLH BUILD WITH GEMINI · ZETECH UNIVERSITY, THIKA · FEB 27 2026
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
